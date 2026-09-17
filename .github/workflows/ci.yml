@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 零依赖单元测试（含静态交叉验证向量）
+        run: python -m unittest discover -s tests -v
+
+      - name: 内置自检
+        run: python -m smcrypto self-test
+        env:
+          PYTHONPATH: src
+
+      - name: 安装交叉验证依赖（gmssl）
+        run: pip install gmssl
+
+      - name: gmssl 在线交叉验证
+        run: python -m unittest discover -s tests -p "interop_gmssl.py" -v

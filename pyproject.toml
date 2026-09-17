@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sm-crypto-toolbox"
+version = "0.1.0"
+description = "国密算法工具箱：SM2/SM3/SM4 纯 Python 从零实现，含文件加密与签名 CLI（零第三方依赖）"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Zhao Wang" }]
+keywords = ["sm2", "sm3", "sm4", "国密", "cryptography", "gm-t", "gb-t", "sm2p256v1"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security :: Cryptography",
+]
+
+# 运行期零依赖：CORE 仅使用 Python 标准库
+dependencies = []
+
+[project.optional-dependencies]
+# 交叉验证用（测试期依赖，非运行期依赖）
+interop = ["gmssl>=3.2.2", "pycryptodomex>=3.19"]
+# 开发工具
+dev = ["ruff>=0.6", "build>=1.2"]
+
+[project.scripts]
+smctl = "smcrypto.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/wangzhao-cs/sm-crypto-toolbox"
+Repository = "https://github.com/wangzhao-cs/sm-crypto-toolbox"
+Issues = "https://github.com/wangzhao-cs/sm-crypto-toolbox/issues"
+Changelog = "https://github.com/wangzhao-cs/sm-crypto-toolbox/releases"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+smcrypto = ["py.typed"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+exclude = [".venv"]
+
+[tool.ruff.lint]
+# 项目刻意采用 Python 3.9 兼容写法（typing.List[...] 等）与 %-格式化风格：
+# 不启用 pyupgrade（UP）规则集，只检查错误/未使用/导入顺序等硬性项。
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
